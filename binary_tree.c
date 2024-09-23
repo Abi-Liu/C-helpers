@@ -1,27 +1,18 @@
+#include "binary_tree.h"
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct bst_node {
-  int value;
-  struct bst_node *left;
-  struct bst_node *right;
-} bst_node;
-
-typedef struct bst {
-  bst_node *root;
-  int size;
-} bst;
-
-bst_node *r_add(bst_node *cur, int data);
-void add(bst *tree, int data);
-int delete(bst *tree, int data);
-bst_node *r_delete(bst_node *cur, bst_node *dummy, int data);
-bst_node* delete_predecessor(bst_node* cur, bst_node* dummy);
-
 // takes an array and builds a BST representing the array
-// bst* build_bst(int[] arr) {
-// }
+bst *build_bst(int arr[], int size) {
+  bst *tree = malloc(sizeof(bst));
+
+  for (int i = 0; i < size; i++) {
+    add(tree, arr[i]);
+  }
+
+  return tree;
+}
 
 bst *build_empty_bst() {
   bst *tree = malloc(sizeof(bst));
@@ -55,13 +46,14 @@ bst_node *r_add(bst_node *cur, int data) {
 
 // remove the node containing the data
 // in the case of 2 children, it will use it's predecessor
-// returns INT_MIN when node to delete is not found, and the deleted data otherwise
-int delete(bst *tree, int data) {
+// returns INT_MIN when node to delete is not found, and the deleted data
+// otherwise
+int remove_node(bst *tree, int data) {
   bst_node *dummy = malloc(sizeof(bst_node));
   dummy->value = INT_MIN;
   tree->root = r_delete(tree->root, dummy, data);
 
-  if(dummy->value != INT_MIN) {
+  if (dummy->value != INT_MIN) {
     // we know the node to delete was found, decrement size
     tree->size--;
   }
@@ -83,18 +75,18 @@ bst_node *r_delete(bst_node *cur, bst_node *dummy, int data) {
   } else {
     // data found
     dummy->value = cur->value;
-    if(cur->left == NULL && cur->right == NULL) {
+    if (cur->left == NULL && cur->right == NULL) {
       // both children are null we can safely remove the node
       return NULL;
-    } else if(cur->left==NULL) {
+    } else if (cur->left == NULL) {
       // right child exists
       return cur->right;
-    } else if(cur->right == NULL) {
+    } else if (cur->right == NULL) {
       // left child exists
       return cur->left;
     } else {
       // both children exist. We will use the predecessor
-      bst_node* dummy2 = malloc(sizeof(bst_node));
+      bst_node *dummy2 = malloc(sizeof(bst_node));
       cur->left = delete_predecessor(cur->left, dummy2);
       cur->value = dummy2->value;
       free(dummy2);
@@ -104,8 +96,8 @@ bst_node *r_delete(bst_node *cur, bst_node *dummy, int data) {
   return cur;
 }
 
-bst_node* delete_predecessor(bst_node* cur, bst_node* dummy) {
-  if(cur->right == NULL) {
+bst_node *delete_predecessor(bst_node *cur, bst_node *dummy) {
+  if (cur->right == NULL) {
     // found predecessor
     dummy->value = cur->value;
     return cur->left;
@@ -114,4 +106,15 @@ bst_node* delete_predecessor(bst_node* cur, bst_node* dummy) {
   }
 
   return cur;
+}
+
+// will print the preorder BST recursively using DFS
+void print_bst(bst_node *root) {
+  if(root == NULL) {
+    return;
+  }
+
+  printf("%d ", root->value);
+  print_bst(root->left);
+  print_bst(root->right);
 }
