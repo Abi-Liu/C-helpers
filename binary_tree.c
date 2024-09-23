@@ -6,6 +6,7 @@
 // takes an array and builds a BST representing the array
 bst *build_bst(int arr[], int size) {
   bst *tree = malloc(sizeof(bst));
+  tree->size = 0;
 
   for (int i = 0; i < size; i++) {
     add(tree, arr[i]);
@@ -23,7 +24,10 @@ bst *build_empty_bst() {
 
 // takes in an integer to add to the tree and puts it in the correct spot
 // bst assumes no duplicate data is present in the tree
-void add(bst *tree, int data) { tree->root = r_add(tree->root, data); }
+void add(bst *tree, int data) {
+  tree->root = r_add(tree->root, data);
+  tree->size++;
+}
 
 // recursive adding helper method
 bst_node *r_add(bst_node *cur, int data) {
@@ -77,13 +81,18 @@ bst_node *r_delete(bst_node *cur, bst_node *dummy, int data) {
     dummy->value = cur->value;
     if (cur->left == NULL && cur->right == NULL) {
       // both children are null we can safely remove the node
+      free(cur);
       return NULL;
     } else if (cur->left == NULL) {
       // right child exists
-      return cur->right;
+      bst_node *temp = cur->right;
+      free(cur);
+      return temp;
     } else if (cur->right == NULL) {
       // left child exists
-      return cur->left;
+      bst_node *temp = cur->left;
+      free(cur);
+      return temp;
     } else {
       // both children exist. We will use the predecessor
       bst_node *dummy2 = malloc(sizeof(bst_node));
@@ -100,7 +109,9 @@ bst_node *delete_predecessor(bst_node *cur, bst_node *dummy) {
   if (cur->right == NULL) {
     // found predecessor
     dummy->value = cur->value;
-    return cur->left;
+    bst_node *temp = cur->left;
+    free(cur);
+    return temp;
   } else {
     cur->right = delete_predecessor(cur->right, dummy);
   }
@@ -117,4 +128,20 @@ void print_bst(bst_node *root) {
   printf("%d ", root->value);
   print_bst(root->left);
   print_bst(root->right);
+}
+
+// recursively free all memory associated with the tree
+void free_tree(bst *tree) {
+  free_tree_helper(tree->root);
+  free(tree);
+}
+
+void free_tree_helper(bst_node *root) {
+  if(root == NULL) {
+    return;
+  }
+
+  free_tree_helper(root->left);
+  free_tree_helper(root->right);
+  free(root);
 }

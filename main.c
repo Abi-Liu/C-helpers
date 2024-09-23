@@ -59,4 +59,7 @@ int main() {
   remove_node(tree, 5);
   print_bst(tree->root);
   printf("\n");
+  printf("%d\n", tree->size);
+
+  free_tree(tree);
 }

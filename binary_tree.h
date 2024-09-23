@@ -20,5 +20,8 @@ int remove_node(bst *tree, int data);
 bst_node *r_delete(bst_node *cur, bst_node *dummy, int data);
 bst_node* delete_predecessor(bst_node* cur, bst_node* dummy);
 void print_bst(bst_node *root);
+void free_tree(bst *tree);
+void free_tree(bst *tree);
+void free_tree_helper(bst_node *root);
 
 #endif
